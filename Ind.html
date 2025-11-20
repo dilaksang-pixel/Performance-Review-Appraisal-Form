@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Performance Review & Appraisal Form</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        const { useState } = React;
+        
+        function PerformanceAppraisalForm() {
+          const [formData, setFormData] = useState({
+            employeeName: '',
+            employeeId: '',
+            position: '',
+            department: '',
+            reviewPeriod: '',
+            reviewDate: '',
+            supervisorName: '',
+            supervisorTitle: '',
+            
+            // Job Knowledge & Skills
+            technicalKnowledge: 0,
+            jobSkills: 0,
+            industryKnowledge: 0,
+            continuousLearning: 0,
+            
+            // Work Quality & Productivity
+            workQuality: 0,
+            accuracy: 0,
+            productivity: 0,
+            efficiency: 0,
+            attention: 0,
+            
+            // Communication & Teamwork
+            verbalCommunication: 0,
+            writtenCommunication: 0,
+            teamwork: 0,
+            interpersonal: 0,
+            
+            // Initiative & Problem Solving
+            initiative: 0,
+            problemSolving: 0,
+            creativity: 0,
+            adaptability: 0,
+            
+            // Reliability & Professionalism
+            attendance: 0,
+            punctuality: 0,
+            dependability: 0,
+            professionalism: 0,
+            ethics: 0,
+            
+            // Leadership (if applicable)
+            leadership: 0,
+            delegation: 0,
+            mentoring: 0,
+            conflict: 0,
+            
+            // Goal Achievement
+            goalsAchieved: '',
+            majorAccomplishments: '',
+            challengesFaced: '',
+            areasOfStrength: '',
+            areasForImprovement: '',
+            
+            // Goals for Next Period
+            goal1: '',
+            goal2: '',
+            goal3: '',
+            goal4: '',
+            goal5: '',
+            
+            // Training & Development
+            trainingNeeds: '',
+            careerAspirations: '',
+            supportNeeded: '',
+            
+            // Overall Assessment
+            overallRating: '',
+            employeeComments: '',
+            supervisorComments: '',
+            actionPlan: ''
+          });
+
+          const handleInputChange = (e) => {
+            const { name, value } = e.target;
+            setFormData(prev => ({
+              ...prev,
+              [name]: value
+            }));
+          };
+
+          const calculateScore = (category) => {
+            const categories = {
+              knowledge: ['technicalKnowledge', 'jobSkills', 'industryKnowledge', 'continuousLearning'],
+              quality: ['workQuality', 'accuracy', 'productivity', 'efficiency', 'attention'],
+              communication: ['verbalCommunication', 'writtenCommunication', 'teamwork', 'interpersonal'],
+              initiative: ['initiative', 'problemSolving', 'creativity', 'adaptability'],
+              reliability: ['attendance', 'punctuality', 'dependability', 'professionalism', 'ethics'],
+              leadership: ['leadership', 'delegation', 'mentoring', 'conflict']
+            };
+            
+            const fields = categories[category];
+            const total = fields.reduce((sum, field) => sum + (parseInt(formData[field]) || 0), 0);
+            const max = fields.length * 5;
+            return { total, max, percentage: max > 0 ? ((total / max) * 100).toFixed(1) : 0 };
+          };
+
+          const calculateOverallScore = () => {
+            const allFields = [
+              'technicalKnowledge', 'jobSkills', 'industryKnowledge', 'continuousLearning',
+              'workQuality', 'accuracy', 'productivity', 'efficiency', 'attention',
+              'verbalCommunication', 'writtenCommunication', 'teamwork', 'interpersonal',
+              'initiative', 'problemSolving', 'creativity', 'adaptability',
+              'attendance', 'punctuality', 'dependability', 'professionalism', 'ethics',
+              'leadership', 'delegation', 'mentoring', 'conflict'
+            ];
+            
+            const total = allFields.reduce((sum, field) => sum + (parseInt(formData[field]) || 0), 0);
+            const max = allFields.length * 5;
+            const percentage = max > 0 ? ((total / max) * 100).toFixed(1) : 0;
+            
+            let grade = '';
+            if (percentage >= 85) {
+              grade = 'A';
+            } else if (percentage >= 75) {
+              grade = 'B';
+            } else if (percentage >= 65) {
+              grade = 'C';
+            } else {
+              grade = 'D';
+            }
+            
+            return { total, max, percentage, grade };
+          };
+
+          const handlePrint = () => {
+            window.print();
+          };
+
+          const ScoreInput = ({ label, name, value }) => (
+            <div className="flex items-center justify-between py-2 border-b border-gray-200">
+              <label className="text-sm font-medium text-gray-700">{label}</label>
+              <div className="flex gap-2">
+                {[1, 2, 3, 4, 5].map(score => (
+                  <label key={score} className="flex items-center cursor-pointer">
+                    <input
+                      type="radio"
+                      name={name}
+                      value={score}
+                      checked={parseInt(value) === score}
+                      onChange={handleInputChange}
+                      className="mr-1"
+                    />
+                    <span className="text-sm">{score}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          );
+
+          const knowledgeScore = calculateScore('knowledge');
+          const qualityScore = calculateScore('quality');
+          const communicationScore = calculateScore('communication');
+          const initiativeScore = calculateScore('initiative');
+          const reliabilityScore = calculateScore('reliability');
+          const leadershipScore = calculateScore('leadership');
+          const overallScore = calculateOverallScore();
+
+          return (
+            <div className="min-h-screen bg-gray-50 p-8">
+              <div className="max-w-5xl mx-auto bg-white shadow-lg rounded-lg overflow-hidden print:shadow-none">
+                <div className="bg-green-600 text-white p-6 print:bg-green-700">
+                  <h1 className="text-3xl font-bold text-center">Employee Performance Review & Appraisal Form</h1>
+                  <p className="text-center text-green-100 mt-2">Annual/Periodic Performance Evaluation</p>
+                </div>
+
+                <div className="flex gap-4 p-6 border-b print:hidden">
+                  <button
+                    onClick={handlePrint}
+                    className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
+                  >
+                    🖨️ Print
+                  </button>
+                </div>
+
+                <div className="p-8">
+                  {/* Employee Information */}
+                  <section className="mb-8">
+                    <h2 className="text-xl font-bold text-gray-800 mb-4 border-b-2 border-green-600 pb-2">Employee Information</h2>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Employee Name</label>
+                        <input
+                          type="text"
+                          name="employeeName"
+                          value={formData.employeeName}
+                          onChange={handleInputChange}
+                          className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Employee ID</label>
+                        <input
+                          type="text"
+                          name="employeeId"
+                          value={formData.employeeId}
+                          onChange={handleInputChange}
+                          className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Position/Title</label>
+                        <input
+                          type="text"
+                          name="position"
+                          value={formData.position}
+                          onChange={handleInputChange}
+                          className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Department</label>
+                        <input
+                          type="text"
+                          name="department"
+                          value={formData.department}
+                          onChange={handleInputChange}
+                          className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                        />
+                      </div>
+                    </div>
+                  </section>
+
+                  {/* Overall Score */}
+                  <section className="mb-8 p-6 bg-gradient-to-r from-green-50 to-green-100 rounded-lg border-2 border-green-600">
+                    <h2 className="text-2xl font-bold text-gray-800 mb-4 text-center">Overall Performance Score</h2>
+                    <div className="text-center">
+                      <div className="text-5xl font-bold text-green-600 mb-2">
+                        {overallScore.percentage}%
+                      </div>
+                      <div className="text-xl text-gray-700">
+                        {overallScore.total} out of {overallScore.max} points
+                      </div>
+                      <div className="mt-4 text-lg font-semibold text-gray-800">
+                        {overallScore.grade} - {overallScore.grade === 'A' ? '🌟 Outstanding Performance' :
+                         overallScore.grade === 'B' ? '✓ Exceeds Expectations' :
+                         overallScore.grade === 'C' ? '◐ Meets Expectations' :
+                         '✗ Needs Improvement'}
+                      </div>
+                    </div>
+                  </section>
+
+                </div>
+              </div>
+            </div>
+          );
+        }
+
+        ReactDOM.render(<PerformanceAppraisalForm />, document.getElementById('root'));
+    </script>
+</body>
+</html>
